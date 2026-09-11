@@ -32,6 +32,15 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               <a href="/clients" className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors">
                 Clients
               </a>
+              <a href="/chauffeurs" className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors">
+                Chauffeurs
+              </a>
+              <a href="/vehicules" className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors">
+                Véhicules
+              </a>
+              <a href="/fournisseurs" className="hover:text-slate-900 dark:hover:text-slate-100 transition-colors">
+                Fournisseurs
+              </a>
             </nav>
             <div className="ml-auto">
               <ThemeToggle />

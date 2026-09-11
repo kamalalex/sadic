@@ -37,7 +37,13 @@ const prestationBaseSchema = new Schema(
     tauxChange: { type: Number }, // requis si prixVente.devise !== "MAD" — voir CDC 5.9
     cout: { type: montantSchema }, // prix payé au sous-traitant / fournisseur
     marge: { type: Number },
-    beneficiaireId: { type: Schema.Types.ObjectId }, // Chauffeur, Groupe ou Fournisseur selon le type
+    // Depuis la fusion Groupe → Fournisseur (11 sept. 2026), le bénéficiaire
+    // payé pour TOUTE prestation (transport, manutention, achat_produit)
+    // est systématiquement un Fournisseur — voir Fournisseur.ts. Les
+    // informations opérationnelles propres au transport (qui a conduit,
+    // quel véhicule) sont portées par les champs spécifiques du
+    // discriminator transport_national ci-dessous, pas par beneficiaireId.
+    beneficiaireId: { type: Schema.Types.ObjectId, ref: "Fournisseur" },
     statut: {
       type: String,
       enum: ["planifiee", "en_cours", "realisee", "facturee"],
@@ -68,7 +74,11 @@ registerDiscriminator("transport_national", {
   villeDepart: { type: String, required: true },
   villeDestination: { type: String, required: true },
   chauffeurId: { type: Schema.Types.ObjectId, ref: "Chauffeur" },
-  groupeId: { type: Schema.Types.ObjectId, ref: "Groupe" },
+  // Véhicule réellement utilisé pour CETTE mission — un chauffeur peut
+  // conduire des véhicules différents selon les missions (voir Chauffeur.ts
+  // et Vehicule.ts), donc ce champ ne se déduit pas automatiquement du
+  // chauffeur : il se choisit à chaque prestation.
+  vehiculeId: { type: Schema.Types.ObjectId, ref: "Vehicule" },
 });
 
 registerDiscriminator("transport_maritime", {
@@ -100,7 +110,6 @@ registerDiscriminator("transport_aerien", {
 });
 
 registerDiscriminator("manutention", {
-  fournisseurId: { type: Schema.Types.ObjectId, ref: "Fournisseur" },
   lieu: { type: String },
 });
 
@@ -116,5 +125,4 @@ registerDiscriminator("achat_produit", {
   designation: { type: String, required: true },
   quantite: { type: Number, required: true },
   prixUnitaire: { type: Number, required: true },
-  fournisseurId: { type: Schema.Types.ObjectId, ref: "Fournisseur" },
 });

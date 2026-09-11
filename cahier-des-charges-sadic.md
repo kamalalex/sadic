@@ -123,7 +123,7 @@ Achat de fournitures nécessaires à l'opération pour le compte du client (ex. 
 **Autre / Rubrique libre**
 Le référentiel Paramètres (2.7) reste ouvert : une société cliente de SADIC doit pouvoir ajouter ses propres types de prestation sans développement supplémentaire.
 
-### 2.5 Ressources — Véhicules, Chauffeurs, Groupes (sous-traitants)
+### 2.5 Ressources — Véhicules, Chauffeurs, Groupes (sous-traitants) *(implémenté — voir 4.5 et 7.2 Phase 2)*
 
 **Chauffeurs**
 Nom, Téléphone, CIN, Immatriculation, Type de véhicule conduit, Groupe/Patron de rattachement, Statut (actif/inactif) avec historique de date.
@@ -252,7 +252,7 @@ Chaque `module-*` est un package TypeScript indépendant : ses propres modèles 
 
 ### 3.9 Système de design & UI *(nouveau, validé avec Kamal)*
 
-Directives visuelles obligatoires pour toute interface SADIC — document dédié complet dans le projet et dans `docs/design-system-sadic.md`. Résumé :
+Directives visuelles obligatoires pour toute interface SADIC — document dédié complet dans le projet (`design-system-sadic.md`). Résumé :
 
 - **Style B2B Modern Pro**, haute densité d'information — inspiration Linear.app / Stripe Dashboard / Vercel. Interdiction explicite du look "AI slop" (gros arrondis `rounded-2xl`+, ombres `shadow-2xl`, Lorem Ipsum, Inter/Arial par défaut).
 - **Couleur d'accent SADIC : Indigo** (`#4F46E5`), distincte des couleurs d'état métier : émeraude (en transit/livré/facturé), ambre (en attente/retardé), rouge (litige/incomplet/annulé), slate (neutre).
@@ -301,11 +301,11 @@ Directives visuelles obligatoires pour toute interface SADIC — document dédi�
   - **type = `achat_produit`** — désignation, quantité, prixUnitaire, fournisseurId.
   - **type = `autre`** — libellé libre défini dans les Paramètres (2.7), pour rester extensible sans développement.
 
-### 4.5 Ressources — Chauffeurs, Groupes, Fournisseurs
+### 4.5 Ressources — Chauffeurs, Groupes, Fournisseurs *(implémenté — Phase 2, `packages/module-transport`)*
 
-- **Chauffeur** — tenantId, nom, téléphone, CIN, immatriculation, type de véhicule, groupeId, statut.
-- **Groupe** (sous-traitant transport / "patron") — tenantId, nom, téléphone, société, facturation directe (oui/non), type de véhicule exploité, statut.
-- **Fournisseur** *(nouveau, généralisation)* — tenantId, nom, type (manutention, fourniture/achat, autre), contact, téléphone. Utilisé par les prestations `manutention` et `achat_produit`. Payé via le même mécanisme que les Groupes dans le module Finance (grand-livre fournisseur commun aux deux).
+- **Chauffeur** — tenantId, nom, téléphone, CIN, immatriculation, `typeVehicule` (référentiel fermé `TYPES_VEHICULE` : Tautliner, Frigo, Plateau, Fourgon, Semi-remorque, Autre), `groupeId` (référence Groupe, optionnelle), `statut` (`actif` | `inactif`), `statutDepuis` (date). Modèle : `packages/module-transport/src/models/Chauffeur.ts` ; service : `chauffeurService.ts` ; UI : `apps/web/app/chauffeurs`.
+- **Groupe** (sous-traitant transport / "patron") — tenantId, nom, téléphone, société, `facturationDirecte` (booléen), `typeVehicule` (même référentiel que Chauffeur), `statut` (`actif` | `inactif`), `statutDepuis`. Modèle : `Groupe.ts` ; service : `groupeService.ts` ; UI : `apps/web/app/groupes`.
+- **Fournisseur** *(généralisation)* — tenantId, nom, `type` (`manutention` | `fourniture_achat` | `autre`), contact, téléphone. Utilisé par les prestations `manutention` et `achat_produit`. Payé via le même mécanisme que les Groupes dans le module Finance (grand-livre fournisseur commun aux deux). Modèle : `Fournisseur.ts` ; service : `fournisseurService.ts` ; UI : `apps/web/app/fournisseurs`.
 
 ### 4.6 Module Flotte *(collections activées uniquement pour les tenants concernés)*
 
@@ -454,17 +454,17 @@ L'intention initiale était de démarrer directement par un module Facture. En r
 
 ### 7.2 Phases
 
-**Phase 0 — Fondations techniques**
+**Phase 0 — Fondations techniques** ✅ *implémentée*
 Scaffolding du monorepo (Turborepo, TypeScript, Next.js), connexion MongoDB Atlas, `package core` (accès données multi-tenant, authentification, modèles Tenant/User, rôles de base), CI/CD (lint, typecheck, tests, preview Vercel). Rien d'autre ne peut démarrer sans cette base.
 
-**Phase 1 — CRM : Client & Paramètres**
+**Phase 1 — CRM : Client & Paramètres** ✅ *implémentée*
 Fiche Client complète (y compris pays/résidence pour la règle multi-devise), référentiels de base (Paramètres) : types de prestation, modes de paiement, banques... Le socle sur lequel s'appuient toutes les opérations.
 
-**Phase 2 — Ressources sous-traitance**
-Chauffeurs, Groupes (patrons), Fournisseurs — nécessaires car les Prestations les référencent directement.
+**Phase 2 — Ressources sous-traitance** ✅ *implémentée*
+Chauffeurs, Groupes (patrons), Fournisseurs — nécessaires car les Prestations les référencent directement. Modèles + services + UI livrés dans `packages/module-transport` (`models/Chauffeur.ts`, `Groupe.ts`, `Fournisseur.ts`, `vehiculeTypes.ts` + services associés) et `apps/web/app/{chauffeurs,groupes,fournisseurs}` — voir section 4.5.
 
 **Phase 3 — Transport national : Opération & Prestation (cœur métier)**
-Création d'une Opération, ajout de Prestations de type transport national — le cas le mieux couvert par vos données actuelles (`id_shippement`/`shippement_details`). C'est la première brique qui produit de la valeur opérationnelle réelle.
+Création d'une Opération, ajout de Prestations de type transport national — le cas le mieux couvert par vos données actuelles (`id_shippement`/`shippement_details`). C'est la première brique qui produit de la valeur opérationnelle réelle. Les modèles `Operation`/`Prestation` existent déjà (Phase 0/1) ; reste à construire les services et l'UI.
 
 **Phase 4 — CRM : Facture**
 Génération de facture à partir des prestations sélectionnées (numérotation atomique, PDF, mention légale, gestion multi-devise MAD/EUR/USD, facture unitaire ou groupée). Devient réalisable une fois Client + Opération + Prestation en place.
@@ -490,4 +490,4 @@ Ce séquencement est **technique, pas rigide dans le temps** : une fois les Fond
 
 ### 7.4 Démarrage concret
 
-Pour rester cohérent avec "faire le nécessaire pour aller jusqu'au bout" plutôt que d'imposer un point de départ arbitraire, le développement démarre par la **Phase 0 + Phase 1** (fondations + Client), qui ne présuppose aucun module métier en particulier et débloque tout le reste.
+Pour rester cohérent avec "faire le nécessaire pour aller jusqu'au bout" plutôt que d'imposer un point de départ arbitraire, le développement démarre par la **Phase 0 + Phase 1** (fondations + Client), qui ne présuppose aucun module métier en particulier et débloque tout le reste. À date (11 septembre 2026), les Phases 0 à 2 sont implémentées ; la Phase 3 (Opération & Prestation transport national) est la prochaine étape.
