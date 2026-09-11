@@ -1,0 +1,19 @@
+{
+  "name": "@sadic/core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "lint": "echo \"(core) lint skipped in scaffold\"",
+    "typecheck": "tsc --noEmit",
+    "test": "echo \"(core) no tests yet\""
+  },
+  "dependencies": {
+    "mongoose": "^8.7.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3"
+  }
+}

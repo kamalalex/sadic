@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Tokens du système de design SADIC — voir docs/design-system-sadic.md
+ * (CDC section 3.9). Light mode par défaut, dark mode via classe `.dark`
+ * sur <html> (voir app/layout.tsx).
+ */
+:root {
+  --sadic-bg: #f8fafc; /* slate-50 */
+  --sadic-surface: #ffffff;
+  --sadic-border: #e2e8f0; /* slate-200 */
+  --sadic-text: #0f172a; /* slate-900 */
+  --sadic-text-muted: #64748b; /* slate-500 */
+}
+
+.dark {
+  --sadic-bg: #090d16;
+  --sadic-surface: #1e293b; /* slate-800 */
+  --sadic-border: #334155; /* slate-700 */
+  --sadic-text: #f1f5f9; /* slate-100 */
+  --sadic-text-muted: #94a3b8; /* slate-400 */
+}
+
+body {
+  background-color: var(--sadic-bg);
+  color: var(--sadic-text);
+}

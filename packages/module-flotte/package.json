@@ -1,0 +1,16 @@
+{
+  "name": "@sadic/module-flotte",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "lint": "echo \"(module-flotte) lint skipped in scaffold\"",
+    "typecheck": "echo \"(module-flotte) rien à typer pour l'instant\"",
+    "test": "echo \"(module-flotte) no tests yet\""
+  },
+  "dependencies": {
+    "@sadic/core": "*"
+  }
+}
