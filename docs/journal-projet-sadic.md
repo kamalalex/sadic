@@ -2,7 +2,14 @@
 
 *Document de suivi — capture l'historique des décisions et de l'avancement du projet, pour ne plus dépendre de la mémoire de conversation. Mis à jour au fil de l'eau. Les documents de référence normatifs restent `cahier-des-charges-sadic.md` (spec fonctionnelle/technique complète) et `docs/design-system-sadic.md` (charte UI) — ce journal résume le "pourquoi" et l'historique, eux décrivent le "quoi" à jour.*
 
-Dernière mise à jour : 11 septembre 2026 (Phase 2 livrée).
+Dernière mise à jour : 11 septembre 2026 (Phase 2 livrée + révisée — session suspendue, reprise prévue le lendemain).
+
+## 0. Point de reprise — à lire en premier en reprenant
+
+- **Dernière action faite** : fusion Groupe → Fournisseur (type `transport`) + ajout de l'entité Véhicule, dans `packages/module-transport` et `apps/web/app/{chauffeurs,vehicules,fournisseurs}` (voir section 7). CDC et ce journal mis à jour en conséquence.
+- **Rien n'a encore été testé par Kamal** après ce refactor (redémarrage de `npm run dev` nécessaire — cache de modèles Mongoose).
+- **Prochaine chose à faire en reprenant** : demander à Kamal de redémarrer `npm run dev`, tester la création d'un Fournisseur (type Transport), d'un Véhicule, puis d'un Chauffeur rattaché aux deux — et vérifier la compilation TS (commandes en section "Pas encore vérifié"). Une fois validé → démarrer la Phase 3 (Opération & Prestation, transport national).
+- Le dossier `app/groupes/` et les fichiers `Groupe.ts`/`groupeService.ts` sont obsolètes mais toujours sur le disque (voir "À nettoyer", section 7) — à supprimer quand un accès shell au dossier sera possible.
 
 ## 1. Contexte et objectif
 
@@ -88,7 +95,7 @@ Précisions obtenues en clarification :
 Ces fichiers ne sont plus exportés ni référencés nulle part ; ils ne cassent rien en l'état, mais peuvent être supprimés dès que pratique.
 
 ### Pas encore vérifié
-- La compilation TypeScript propre (`tsc --noEmit`) du module Client affiné, ni celle des nouveaux modules Chauffeur/Groupe/Fournisseur, n'a été confirmée par Kamal. À vérifier avec :
+- La compilation TypeScript propre (`tsc --noEmit`) du module Client affiné, ni celle des modules Chauffeur/Fournisseur/Véhicule (et de leur révision Groupe→Fournisseur), n'a été confirmée par Kamal. À vérifier avec :
   ```
   npx tsc --noEmit -p packages/module-crm/tsconfig.json
   npx tsc --noEmit -p packages/module-transport/tsconfig.json

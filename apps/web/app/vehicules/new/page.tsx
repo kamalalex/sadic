@@ -4,6 +4,9 @@ import { getCurrentTenantId } from "../../../lib/currentTenant";
 import { createVehiculeAction } from "../actions";
 import { VehiculeTypeSelect } from "../../../components/VehiculeTypeSelect";
 
+// Page dynamique par nature (données par tenant) — voir CDC section 3.4.
+export const dynamic = "force-dynamic";
+
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block space-y-1">

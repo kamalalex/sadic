@@ -3,6 +3,9 @@ import { listFournisseurs, listVehicules } from "@sadic/module-transport";
 import { getCurrentTenantId } from "../../../lib/currentTenant";
 import { createChauffeurAction } from "../actions";
 
+// Page dynamique par nature (données par tenant) — voir CDC section 3.4.
+export const dynamic = "force-dynamic";
+
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block space-y-1">
