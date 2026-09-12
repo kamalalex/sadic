@@ -1,5 +1,6 @@
 import { connectDb } from "@sadic/core";
 import { Vehicule } from "../models/Vehicule";
+import { Fournisseur } from "../models/Fournisseur";
 import type { StatutVehicule } from "../models/Vehicule";
 import type { TypeVehicule } from "../models/vehiculeTypes";
 
@@ -41,12 +42,17 @@ export async function listVehicules(tenantId: string, options: ListVehiculesOpti
   if (options.fournisseurId) {
     filter.fournisseurId = options.fournisseurId;
   }
-  return Vehicule.find(filter).sort({ immatriculation: 1 }).populate("fournisseurId", "nom").lean();
+  return Vehicule.find(filter)
+    .sort({ immatriculation: 1 })
+    .populate({ path: "fournisseurId", select: "nom", match: { tenantId } })
+    .lean();
 }
 
 export async function getVehiculeById(tenantId: string, vehiculeId: string) {
   await connectDb();
-  return Vehicule.findOne({ tenantId, _id: vehiculeId }).populate("fournisseurId", "nom").lean();
+  return Vehicule.findOne({ tenantId, _id: vehiculeId })
+    .populate({ path: "fournisseurId", select: "nom", match: { tenantId } })
+    .lean();
 }
 
 export async function updateVehicule(

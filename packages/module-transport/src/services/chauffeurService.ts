@@ -1,5 +1,7 @@
 import { connectDb } from "@sadic/core";
 import { Chauffeur } from "../models/Chauffeur";
+import { Fournisseur } from "../models/Fournisseur";
+import { Vehicule } from "../models/Vehicule";
 import type { StatutChauffeur } from "../models/Chauffeur";
 
 /**
@@ -45,16 +47,16 @@ export async function listChauffeurs(tenantId: string, options: ListChauffeursOp
   }
   return Chauffeur.find(filter)
     .sort({ nom: 1 })
-    .populate("fournisseurId", "nom")
-    .populate("vehiculeActuelId", "immatriculation typeVehicule")
+    .populate({ path: "fournisseurId", select: "nom", match: { tenantId } })
+    .populate({ path: "vehiculeActuelId", select: "immatriculation typeVehicule", match: { tenantId } })
     .lean();
 }
 
 export async function getChauffeurById(tenantId: string, chauffeurId: string) {
   await connectDb();
   return Chauffeur.findOne({ tenantId, _id: chauffeurId })
-    .populate("fournisseurId", "nom")
-    .populate("vehiculeActuelId", "immatriculation typeVehicule")
+    .populate({ path: "fournisseurId", select: "nom", match: { tenantId } })
+    .populate({ path: "vehiculeActuelId", select: "immatriculation typeVehicule", match: { tenantId } })
     .lean();
 }
 
